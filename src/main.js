@@ -5,10 +5,15 @@ let robot, face, actions, expressions, activeAction, previousAction;
 const api = { state: 'Running' };
 const states = ['Idle', 'Walking', 'Running', 'Dance', 'Death', 'Sitting', 'Standing'];
 const emotes = ['Jump', 'Yes', 'No', 'Wave', 'Punch', 'ThumbsUp'];
-scaler = 2.5
 
-init();
-animate();
+cellsize =  50
+cellnum = 20
+scaler = cellsize / cellnum
+
+function loaded() {
+    init();
+    animate();
+}
 
 function init() {
     camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 100);
@@ -16,8 +21,7 @@ function init() {
     camera.lookAt(new THREE.Vector3(0, 1, 0));
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xd0d0d0);
-    
+    scene.background = new THREE.Color(0xd0d0d0);    
 
     clock = new THREE.Clock();
 
@@ -31,6 +35,7 @@ function init() {
     scene.add(dirLight);
 
     // robot
+    // https://threejs.org/docs/#examples/en/loaders/GLTFLoader
     const loader = new THREE.GLTFLoader();
     loader.load('/res/RobotExpressive.glb', function (gltf) {
         robot = gltf.scene;
@@ -38,7 +43,8 @@ function init() {
         queryActions(robot, gltf.animations);
 
         createGround()
-        createTweet();
+        createTweet()
+
     }, undefined, function (e) {
         console.error(e);
     });
@@ -60,7 +66,8 @@ function createGround() {
     mesh.rotation.x = - Math.PI / 2;
     scene.add(mesh);
 
-    const grid = new THREE.GridHelper(50, 20, 0x000000, 0x000000);
+    // https://threejs.org/docs/#api/en/helpers/GridHelper
+    const grid = new THREE.GridHelper(cellsize, cellnum, 0x000000, 0x000000);
     grid.material.opacity = 0.2;
     grid.material.transparent = true;
     scene.add(grid);
